@@ -1,9 +1,11 @@
 import { Alert, ScrollView, StyleSheet, Switch, Text, TextInput, TouchableOpacity, View } from "react-native";
 import { Screen } from "../../components/Screen";
+import { useAuth } from "../../providers/AuthProvider";
 import { useDailyFlow } from "../../providers/AppProvider";
 
 export default function SettingsScreen() {
   const { state, actions } = useDailyFlow();
+  const { configured, user, signOut } = useAuth();
 
   return (
     <Screen accent="ember">
@@ -40,6 +42,18 @@ export default function SettingsScreen() {
             />
             <Text style={styles.settingSub}>Stored locally for now. Notification wiring comes after the core flow is stable.</Text>
           </View>
+        </View>
+
+        <View style={styles.card}>
+          <Text style={styles.cardTitle}>Account</Text>
+          <Text style={styles.settingSub}>
+            {user ? `Signed in as ${user.email ?? "your account"}` : configured ? "Not signed in" : "Firebase setup is pending"}
+          </Text>
+          {user ? (
+            <TouchableOpacity style={styles.secondaryButton} onPress={() => signOut()}>
+              <Text style={styles.secondaryText}>Sign out</Text>
+            </TouchableOpacity>
+          ) : null}
         </View>
 
         <View style={styles.card}>
@@ -146,6 +160,18 @@ const styles = StyleSheet.create({
   },
   dangerText: {
     color: "#fecaca",
+    fontWeight: "800"
+  },
+  secondaryButton: {
+    borderRadius: 16,
+    paddingVertical: 14,
+    alignItems: "center",
+    backgroundColor: "#17233a",
+    borderWidth: 1,
+    borderColor: "#334155"
+  },
+  secondaryText: {
+    color: "#e2e8f0",
     fontWeight: "800"
   }
 });
