@@ -1,9 +1,10 @@
 import { createContext, ReactNode, useContext, useEffect, useState } from "react";
 import { Alert } from "react-native";
 import { buildTomorrowPreview, completionRateForDay } from "../lib/planner";
-import { loadState, saveState, initialState } from "../lib/storage";
+import { clearState, loadState, saveState, initialState } from "../lib/storage";
 import { AppState, DayRecord, Priority, Task } from "../lib/types";
 import { speakTasks as speakTasksImpl } from "../lib/voice";
+import { useAuth } from "./AuthProvider";
 
 type AppContextValue = {
   state: AppState;
@@ -37,29 +38,33 @@ function createTask(title: string, priority: Priority): Task {
 }
 
 export function AppProvider({ children }: { children: ReactNode }) {
+  const { user } = useAuth();
   const [state, setState] = useState<AppState>(initialState);
   const [ready, setReady] = useState(false);
+  const [loadedForUser, setLoadedForUser] = useState<string | undefined>();
 
   useEffect(() => {
     let mounted = true;
-    loadState().then((next) => {
+    setReady(false);
+    loadState(user?.uid).then((next) => {
       if (!mounted) {
         return;
       }
       setState(next);
+      setLoadedForUser(user?.uid);
       setReady(true);
     });
     return () => {
       mounted = false;
     };
-  }, []);
+  }, [user?.uid]);
 
   useEffect(() => {
-    if (!ready) {
+    if (!ready || loadedForUser !== user?.uid) {
       return;
     }
-    saveState(state);
-  }, [ready, state]);
+    saveState(state, user?.uid);
+  }, [loadedForUser, ready, state, user?.uid]);
 
   const updateDay = (date: string, updater: (day: DayRecord) => DayRecord) => {
     setState((current) => {
@@ -242,8 +247,9 @@ export function AppProvider({ children }: { children: ReactNode }) {
       }));
     },
     resetAll: async () => {
+      await clearState(user?.uid);
       setState(initialState);
-      Alert.alert("Reset complete", "Local data was cleared on this device.");
+      Alert.alert("Reset complete", user ? "Your cloud and local data were cleared." : "Local data was cleared on this device.");
     },
     speakTasks: (tasks) => {
       if (!state.settings.voiceEnabled) {
