@@ -103,3 +103,16 @@ each call well within Gemini's free-tier limits.
 5. Voice input (expo-speech-recognition)
 6. Voice output (expo-speech)
 7. History screen + polish
+
+## Firebase Setup
+
+The app supports Firebase Authentication and Firestore persistence. To enable the cloud path:
+
+1. Create a Firebase project and register an Expo/web app.
+2. Enable Email/Password under Authentication > Sign-in method.
+3. Create a Firestore database.
+4. Copy `.env.example` to `.env` and fill in the Firebase web configuration values.
+5. Deploy `firestore.rules` with the Firebase CLI, or copy the rules into the Firebase console.
+6. Run `npm install`, then `npm start`.
+
+When the Firebase variables are absent, DailyFlow continues to use the local device cache so the UI can be developed without cloud credentials.
