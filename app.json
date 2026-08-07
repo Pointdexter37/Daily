@@ -1,0 +1,19 @@
+{
+  "expo": {
+    "name": "DailyFlow",
+    "slug": "dailyflow",
+    "scheme": "dailyflow",
+    "version": "0.1.0",
+    "orientation": "portrait",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "backgroundColor": "#0f172a"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "plugins": [
+      "expo-router"
+    ]
+  }
+}
