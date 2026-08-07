@@ -1,5 +1,6 @@
-import { Tabs } from "expo-router";
+import { Redirect, Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { useAuth } from "../../providers/AuthProvider";
 
 const tabIcon = {
   today: "checkbox-outline",
@@ -9,6 +10,11 @@ const tabIcon = {
 } as const;
 
 export default function TabsLayout() {
+  const { configured, loading, user } = useAuth();
+  if (configured && !loading && !user) {
+    return <Redirect href="/sign-in" />;
+  }
+
   return (
     <Tabs
       screenOptions={{

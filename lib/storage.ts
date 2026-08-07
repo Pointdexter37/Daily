@@ -35,7 +35,7 @@ export async function loadState(userId?: string) {
 
   if (userId && isFirebaseConfigured) {
     try {
-      const cloudState = await loadCloudState(userId, localState);
+      const cloudState = await loadCloudState(userId, initialState);
       await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(cloudState));
       return cloudState;
     } catch {
